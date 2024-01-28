@@ -18,7 +18,10 @@
             margin: 0;
         }
         </style>
-        <title></title>
+        <link rel="stylesheet" href="css/L.Control.MousePosition.css">
+
+        <title>Localizzazione delle Osservazioni 2024</title>
+
     </head>
     <body>
         <div id="map">
@@ -39,6 +42,7 @@
         <script src="data/p22_Zonizzazione_7500_classi_geo_3.js"></script>
         <script src="data/p22_Zonizzazione_7500_limite_calibrato_4.js"></script>
         <script src="data/Localizzazione_Istanze_5.js"></script>
+        <script src="js/L.Control.MousePosition.js"></script>
         <script>
         var highlightLayer;
         function highlightFeature(e) {
@@ -58,8 +62,10 @@
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
         }).fitBounds([[45.93154891930958,8.532042773270586],[45.938757141701934,8.550085415900517]]);
+
+
         var hash = new L.Hash(map);
-        map.attributionControl.setPrefix('<a href="https://www.linkedin.com/in/ivano-giuliano/" target="_blank">i_giuliano</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        map.attributionControl.setPrefix('<a href="https://www.linkedin.com/in/ivano-giuliano/" target="_blank">Realizzato da Ivano Giuliano</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         var measureControl = new L.Control.Measure({
@@ -338,6 +344,50 @@
         var baseMaps = {};
         L.control.layers(baseMaps,{'<img src="legend/Localizzazione_Istanze_5.png" /> Localizzazione_Istanze': layer_Localizzazione_Istanze_5,'<img src="legend/p22_Zonizzazione_7500_limite_calibrato_4.png" /> p2.2_Zonizzazione_7500_limite_calibrato': layer_p22_Zonizzazione_7500_limite_calibrato_4,'<img src="legend/p22_Zonizzazione_7500_classi_geo_3.png" /> p2.2_Zonizzazione_7500_classi_geo': layer_p22_Zonizzazione_7500_classi_geo_3,'<img src="legend/p22_Zonizzazione_7500_isoipsa_300m_2.png" /> p2.2_Zonizzazione_7500_isoipsa_300m': layer_p22_Zonizzazione_7500_isoipsa_300m_2,"P2.2 - Zonizzazione_7500_txt": layer_P22Zonizzazione_7500_txt_1,"Google Satellite Hybrid": layer_GoogleSatelliteHybrid_0,}).addTo(map);
         setBounds();
+
+        // CRS Mouse Position
+        L.control.mousePosition().addTo(map);
+
+
+        // Metric Scale - bottomleft
+        L.control.scale({
+          metric: true,
+          imperial: false,
+          position: 'bottomleft'
+        }).addTo(map);
+
+
+        // Add Logo Verbania Custom Position
+L.LogoControl = L.Control.extend({
+  options: {
+    position: 'bottomright',
+    // Aggiungi le coordinate x e y desiderate
+    offsetX: 50,
+    offsetY: 50,
+  },
+
+  onAdd: function (map) {
+    var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control logo-control');
+    var button = L.DomUtil.create('a', '', container);
+    var logoImg = L.DomUtil.create('img', 'logo-control-img', button);
+
+    logoImg.src = 'https://fractaliaspei.files.wordpress.com/2013/04/logo_comune_vb-l.png';
+    logoImg.style.width = '150%';
+
+    L.DomEvent.disableClickPropagation(button);
+    container.title = 'Ufficio Urbanistica-SIT';
+
+    // Applica le coordinate x e y
+    container.style.marginRight = this.options.offsetX + 'px';
+    container.style.marginBottom = this.options.offsetY + 'px';
+
+    return container;
+  }
+});
+
+// Aggiungo il controllo al mio oggetto mappa
+        new L.LogoControl().addTo(map)
+
         var i = 0;
         layer_Localizzazione_Istanze_5.eachLayer(function(layer) {
             var context = {
